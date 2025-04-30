@@ -46,4 +46,10 @@ df_combi.drop(columns=['Site_Prefix'], inplace=True)
 # Print the resulting DataFrame
 print(f"After merging: {len(df_combi)} rows")
 
+#print("Columns in df_combi:", df_combi.columns)
+combi_columns = ["Year",'Crop', 'Treatment',
+       'Grain_yield_kg_ha', 'Stover_g_m2', 'Harvest_index',
+       'Sol_Rad_MJ_m2_d', 'T_min_C', 'T_max_C', 'PCPN_mm_d', 'RH_f',
+       'Wind_spd_m_s']
+
 df_combi.to_csv('./datasets/h5-i2_2016-2021_daily_harvest_cleaned.csv', index=False)
