@@ -15,8 +15,16 @@ df = df[columns]
 print("hello_goodbye - World")
 
 # Create a scatter plot matrix
-sns.pairplot(df, diag_kind="kde",hue="Crop", markers=["o", "s", "D"],)
+#sns.pairplot(df, diag_kind="kde",hue="Crop", markers=["o", "s", "D"],)
 # sns.pairplot(df, diag_kind='kde', corner=True)
 
 # Show the plot
-plt.savefig(os.getcwd() +'\charactersing_datasets\H5_USDA_Seaborn_Matrix.png', dpi=300, bbox_inches='tight')
+#plt.savefig(os.getcwd() +'\charactersing_datasets\H5_USDA_Seaborn_Matrix.png', dpi=300, bbox_inches='tight')
+columns = [       'Grain_yield_kg_ha', 'Stover_g_m2', 'Harvest_index',
+       'Sol_Rad_MJ_m2_d', 'T_min_C', 'T_max_C', 'RH_f',
+       'Wind_spd_m_s']
+df = df[columns]
+
+sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
+plt.title('H5 USA Dataset Correlation Heatmap')
+plt.savefig(os.getcwd() +'\charactersing_datasets\H5_USDA_Seaborn_Heatmap.png', dpi=300, bbox_inches='tight')
