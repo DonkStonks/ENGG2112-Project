@@ -12,6 +12,7 @@ columns = ['Crop', 'Treatment',
        'Sol_Rad_MJ_m2_d', 'T_min_C', 'T_max_C', 'RH_f',
        'Wind_spd_m_s']
 df = df[columns]
+print("hello_goodbye - World")
 
 # Create a scatter plot matrix
 sns.pairplot(df, diag_kind="kde",hue="Crop", markers=["o", "s", "D"],)
