@@ -78,9 +78,8 @@ df = pd.DataFrame(columns=["Failed_Calls","Tries","Reason"])
 # Save the empty DataFrame to a CSV file
 df.to_csv(failures, index=False)
 
-for name_of_item_tup[42:] in filenames:
-    if len(name_of_item_tup) < 24:
-        print(name_of_item_tup," Skipped")
+for name_of_item_tup in filenames[188:]:
+    if name_of_item_tup[20:23]!="VIC":
         continue
     name_of_item_tup = name_of_item_tup.replace(" ", "")
     print("Processing:", name_of_item_tup)
