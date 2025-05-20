@@ -1,52 +1,68 @@
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 import os
 
 def data_set_cleaning():
-    # Adjust the path to point to the dataset (one folder up)
-    file_path = os.path.join(os.path.dirname(__file__), '..', 'Crop_recommendation.csv')
-
-    # Load dataset
+    # ——— load raw CSV ———
+    file_path = os.path.join(os.path.dirname(__file__),
+                             '..', 'Crop_recommendation.csv')
     df = pd.read_csv(file_path)
 
-    # Remove unnecessary columns
-    df = df.drop(['field_id','date_of_image','Unnamed: 13','Unnamed: 14'],axis=1)
+    # ——— explicitly drop the two columns around GNDVI ———
+    if 'GNDVI' in df.columns:
+        # find its position
+        idx = df.columns.get_loc('GNDVI')
+        # build list: GNDVI plus next column if it exists
+        to_drop = [df.columns[idx]]
+        if idx + 1 < len(df.columns):
+            to_drop.append(df.columns[idx + 1])
+        df = df.drop(columns=to_drop)
+        print(f"Dropped around GNDVI: {to_drop}")
 
-    # Drop completely empty or unnamed columns
-    df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+    # ——— drop any other unwanted columns ———
+    df = df.drop(columns=['field_id', 'date_of_image',
+                          'Unnamed: 13', 'Unnamed: 14'],
+                 errors='ignore')
 
-    # Replace inf/-inf with NaN and drop rows with any missing values
-    df.replace([float('inf'), float('-inf')], pd.NA, inplace=True)
-    df.dropna(inplace=True)
+    # ——— drop any residual 'Unnamed...' cols ———
+    unnamed = [c for c in df.columns if c.startswith('Unnamed')]
+    if unnamed:
+        df = df.drop(columns=unnamed)
+        print(f"Dropped dynamic Unnamed cols: {unnamed}")
 
-    # One-hot encode categorical columns if present (keep all categories)
-    categorical_cols = df.select_dtypes(include=['object']).columns
-    if not categorical_cols.empty:
-        df_encoded = pd.get_dummies(df, columns=categorical_cols, drop_first=False)
-    else:
-        df_encoded = df.copy()
+    # ——— replace infinities & drop any rows with missing ———
+    df = df.replace([float('inf'), float('-inf')], pd.NA).dropna()
 
-    # Drop constant columns (same value everywhere)
-    df_encoded = df_encoded.loc[:, df_encoded.nunique() > 1]
+    # ——— one-hot encode any categoricals ———
+    cats = df.select_dtypes(include='object').columns.tolist()
+    if cats:
+        df = pd.get_dummies(df, columns=cats, drop_first=False)
 
+    # ——— drop constant columns ———
+    df = df.loc[:, df.nunique() > 1]
 
-    #Calculate NDVI and SAVI
-    df_encoded["NDVI_temp"] = df_encoded["NDVI"] * df_encoded["temperature"]
-    df_encoded["NDVI_rainfall"] = df_encoded["NDVI"] * df_encoded["rainfall"]
-    df_encoded["SAVI_soil_moisture"] = df_encoded["SAVI"] * df_encoded["soil_moisture"]
+    # ——— compute the three agronomic indices ———
+    df['Vegetation Growth Index']       = df['NDVI']     * df['temperature']
+    df['Soil Moisture Vegetation Index'] = df['SAVI']     * df['soil_moisture']
+    df['Water–Soil Balance Index']      = df['rainfall'] * df['soil_moisture']
 
-    return df_encoded
+    # ——— drop the raw columns now unused ———
+    df = df.drop(columns=['NDVI', 'SAVI', 'soil_moisture'], errors='ignore')
 
+    # ——— clean up all column names to Title Case ———
+    def clean_col(name: str) -> str:
+        return (name.strip()
+                    .replace('_', ' ')
+                    .replace('.', ' ')
+                    .title())
+    df = df.rename(columns=clean_col)
+
+    return df
 
 def main():
-    print("Cleaning dataset...")
+    print("Cleaning dataset…")
     data = data_set_cleaning()
     print(data.head())
     data.to_csv('./datasets/Crop_recommendation_cleaned.csv', index=False)
 
-
 if __name__ == "__main__":
     main()
-
-

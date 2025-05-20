@@ -8,8 +8,8 @@ import os
 df = pd.read_csv(os.getcwd() + '\datasets\h5-i2_2016-2021_daily_harvest_cleaned.csv')
 
 columns = ['Crop', 'Treatment',
-       'Grain_yield_kg_ha', 'Stover_g_m2', 'Harvest_index',
-       'Sol_Rad_MJ_m2_d', 'T_min_C', 'T_max_C', 'RH_f',
+       'Grain_yield_kg_ha', 
+       'Sol_Rad_MJ_m2_d',  'T_max_C', 'RH_f',
        'Wind_spd_m_s']
 df = df[columns]
 

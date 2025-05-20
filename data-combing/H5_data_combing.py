@@ -52,4 +52,6 @@ combi_columns = ["Year",'Crop', 'Treatment',
        'Sol_Rad_MJ_m2_d', 'T_min_C', 'T_max_C', 'PCPN_mm_d', 'RH_f',
        'Wind_spd_m_s']
 
+df_combi = df_combi.drop(columns=['T_min_C', 'Harvest_index' , 'Stover_g_m2'])
+
 df_combi.to_csv('./datasets/h5-i2_2016-2021_daily_harvest_cleaned.csv', index=False)
